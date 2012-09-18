@@ -11,7 +11,7 @@
 #
 # By default this script does nothing.
 
-sleep 2
+sleep 5
 echo "Chainloading LSSDep boot"
 export lssdepserver=$lssdepserver
 wget -O - http://$lssdepserver/boot.sh | bash
