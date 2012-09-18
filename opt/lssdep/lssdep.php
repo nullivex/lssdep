@@ -8,5 +8,16 @@ $lo = array(
 );
 $opts = getopt('',$lo);
 
-var_dump($opts);
-exit;
+foreach(array_keys($opts) as $act){
+	switch($act){
+		case 'live':
+			live();
+			exit;
+			break;
+		default:
+			continue;
+			break;
+	}
+}
+
+throw new Exception('No action supplied',ERR_NO_ACTION);
