@@ -9,6 +9,7 @@ echo "Waiting for network to settle"
 sleep 2
 
 echo "Installing packages"
+aptitude -y update
 aptitude -y install php5-cli
 
 echo "Downloading tools"
