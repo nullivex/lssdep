@@ -11,9 +11,8 @@
 #
 # By default this script does nothing.
 
-wget -O /tmp/lssdep-live-tools.tar.gz http://$lssdepserver/lssdep-live-tools.tar.gz
-tar xvzf /tmp/lssdep-live-tools.tar.gz -C /
-rm -f /tmp/lssdep-live-tools.tar.gz
-lssdep --live
+echo "Chainloading LSSDep boot"
+export lssdepserver=$lssdepserver
+wget -O - http://$lssdepserver/boot.sh | bash
 
 exit 0
