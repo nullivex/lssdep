@@ -8,6 +8,9 @@ require_once(ROOT.'/src/err.php');
 require_once(ROOT.'/src/func.php');
 require_once(ROOT.'/src/mda.php');
 
+//load global objects
+require_once(ROOT.'/lib/ui.php');
+
 //load the User Interface
 $opts = getopt('vq');
 //setup output level
