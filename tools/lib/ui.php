@@ -75,15 +75,15 @@ abstract class UI {
 			$type = self::TEXT;
 		switch($type){
 			case self::TEXT:
-				require_once(ROOT.'/tools/lib/ui_text.php');
+				require_once(ROOT.'/lib/ui_text.php');
 				self::$inst = new UIText();
 				break;
 			case self::MENU:
-				require_once(ROOT.'/tools/lib/ui_menu.php');
+				require_once(ROOT.'/lib/ui_menu.php');
 				self::$inst = new UIMenu();
 				break;
 			case self::HTML:
-				require_once(ROOT.'/tools/lib/ui_html.php');
+				require_once(ROOT.'/lib/ui_html.php');
 				self::$inst = new UIHTML();
 				break;
 		}

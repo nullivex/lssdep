@@ -1,0 +1,12 @@
+html,body {	font-family: arial, serif;	font-size: 0.9em;}
+
+.logo {text-decoration: none; font-weight: bold; font-size: 3em;}
+#headnav a {float: left; margin: 5px; padding: 5px; border: 1px solid #000;}
+.clear {clear: both;}
+
+.left {display: block;}
+.right {float: right;}
+
+.alert {border: 1px solid; padding: 3px; margin: 3px; background-color: #8BDF7D; border-color: #225F17; color: #225F17;}
+.alert p {margin: 0px; padding: 0px;}
+.failure {background-color: #EFA4AE; border-color: #5F1717; color: #5F1717;}

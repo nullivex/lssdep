@@ -1,0 +1,16 @@
+<?php
+// THIS IS A VOLATILE FILE AND MAY BE REGENERATED AUTOMATICALLY
+
+$tgtdef = array();
+$tgtdef['defparser'] = '0';
+$tgtdef['ui'] = '0';
+$tgtdef['mirror'] = array();
+$tgtdef['installed'] = array();
+$tgtdef['installed']['main/io/web'] = '0.0.1';
+$tgtdef['installed']['main/lib-sys/url'] = '0.0.1';
+$tgtdef['installed']['main/lib-sys/validate'] = '0.0.1';
+$tgtdef['installed']['main/sys/config'] = '0.0.1';
+$tgtdef['installed']['main/sys/router'] = '0.0.1';
+$tgtdef['installed']['main/sys/tpl'] = '0.0.1';
+$tgtdef['installed']['main/util/func'] = '0.0.1';
+
