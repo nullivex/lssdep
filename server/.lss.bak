@@ -10,6 +10,7 @@ $tgtdef['installed']['main/io/web'] = '0.0.1';
 $tgtdef['installed']['main/lib-sys/url'] = '0.0.1';
 $tgtdef['installed']['main/lib-sys/validate'] = '0.0.1';
 $tgtdef['installed']['main/sys/config'] = '0.0.1';
+$tgtdef['installed']['main/sys/db'] = '0.0.1';
 $tgtdef['installed']['main/sys/router'] = '0.0.1';
 $tgtdef['installed']['main/sys/tpl'] = '0.0.1';
 $tgtdef['installed']['main/util/func'] = '0.0.1';

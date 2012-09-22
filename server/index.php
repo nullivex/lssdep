@@ -51,7 +51,7 @@ require_once(ROOT.'/lib/router.php');
 require_once(ROOT.'/lib/url.php');
 
 try {
-
+	
 	//load global funcs
 	$dir = false;
 	if(is_dir('src.d')) $dir = opendir('src.d');
@@ -66,6 +66,19 @@ try {
 		sort($files);
 		foreach($files as $file) include('src.d/'.$file);
 	}
+	
+	//load error codes
+	$dir = false;  $err = array();
+	if(is_dir('err.d')) $dir = opendir('err.d');
+	if($dir){
+		while(($file = readdir($dir)) !== false){
+			if(in_array($file,array('.','..'))) continue;
+			if(is_dir($file)) continue;
+			registerErrCodes('err.d/'.$file,$err);
+		}
+		closedir($dir);
+	}
+	unset($err);
 
 	//init modules
 	$dir = false;

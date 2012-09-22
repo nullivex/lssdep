@@ -14,4 +14,5 @@ $tgtdef['installed']['main/sys/db'] = '0.0.1';
 $tgtdef['installed']['main/sys/router'] = '0.0.1';
 $tgtdef['installed']['main/sys/tpl'] = '0.0.1';
 $tgtdef['installed']['main/util/func'] = '0.0.1';
+$tgtdef['installed']['main/util/mda'] = '0.0.1';
 

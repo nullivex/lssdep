@@ -66,6 +66,27 @@ function data($data=false){
 	return null;
 }
 
+function registerErrCodes($file,&$err_codes=array()){
+	include($file);
+	if(!isset($err)) return;
+	foreach($err as $code => $constant){
+		if(strpos($constant,'ERR_') !== 0){
+			trigger_error('Invalid error code constant: '.$constant.' must start with ERR_ definition ignored');
+			continue;
+		}
+		if(in_array($code,array_keys($err_codes))){
+			trigger_error('Error code already defined: '.$code.' by constant: '.$err_codes[$code].' definition ignored');
+			continue;
+		}
+		if(defined($constant)){
+			trigger_error('Error constant has already been defined: '.$constant.' and is in use by code '.constant($constant).' definition ignored');
+			continue;
+		}
+		define($constant,$code);
+		$err_codes[$code] = $constant;
+	}
+}
+
 function sysError($msg){
 	error($msg);
 }
