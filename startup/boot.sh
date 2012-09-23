@@ -13,6 +13,12 @@ sleep 2
 #aptitude -y update
 #aptitude -y install php5-cli php5-curl lshw hdparm ethtool gettext gcc make
 
+# new packages (should be merged)
+aptitude -y update
+aptitude -y install parted nginx
+mkdir -p /var/www
+service nginx start
+
 echo "Installing ms-sys to modify Microsoft MBR's"
 mkdir -p /tmp/ms-sys
 wget -O /tmp/ms-sys/ms-sys.tar.gz http://$lssdepserver/content/ms-sys.tar.gz

@@ -2,6 +2,32 @@
 
 class Devices {
 
+	//drive partition tables
+	const DRIVE_PART_TYPE_MSDOS = 'msdos';
+	const DRIVE_PART_TYPE_GPT = 'gpt';
+	const DRIVE_PART_TYPE_NONE = 'none';
+	
+	//drive partition types
+	const DRIVE_SEGMENT_PRIMARY = 'primary';
+	const DRIVE_SEGMENT_LOGICAL = 'logical';
+	const DRIVE_SEGMENT_NONE = 'none';
+	
+	//drive partition filesystems
+	const DRIVE_FS_NONE = 'none';
+	const DRIVE_FS_SWAP = 'swap';
+	const DRIVE_FS_NTFS = 'ntfs';
+	const DRIVE_FS_FAT = 'fat';
+	const DRIVE_FS_VFAT = 'vfat';
+	const DRIVE_FS_FAT16 = 'fat16';
+	const DRIVE_FS_FAT32 = 'fat32';
+	const DRIVE_FS_EXT2 = 'ext2';
+	const DRIVE_FS_EXT4 = 'ext4';
+	const DRIVE_FS_XFS = 'xfs';
+	const DRIVE_FS_BTRFS = 'btrfs';
+	const DRIVE_FS_JFS = 'jfs';
+	const DRIVE_FS_REISERFS = 'reiserfs';
+	const DRIVE_FS_REISER4 = 'reiser4';
+
 	public $db;
 	
 	public static function _get(){
@@ -112,21 +138,77 @@ class Devices {
 		return $this->db->lastInsertId();
 	}
 	
-	public function NICAdd($device_id,$vendor,$product,$logicalname,$mac,$speed,$irq){
+	public function PCIAdd($device_id,$vendor,$product,$description,$physid,$bus,$bits,$irq){
+		$query = $this->db->prepare('
+			insert into device_pci
+			(
+				device_id,
+				vendor,
+				product,
+				description,
+				physid,
+				bus,
+				bits,
+				irq
+			) values (?,?,?,?,?,?,?,?)
+		');
+		$query->execute(array(
+			$device_id,
+			$product,
+			$vendor,
+			$description,
+			$physid,
+			$bus,
+			$bits,
+			$irq
+		));
+		return $this->db->lastInsertId();
+	}
+	
+	public function SCSIAdd($device_id,$vendor,$product,$description,$physid,$bus,$bits,$irq){
+		$query = $this->db->prepare('
+			insert into device_scsi
+			(
+				device_id,
+				vendor,
+				product,
+				description,
+				physid,
+				bus,
+				bits,
+				irq
+			) values (?,?,?,?,?,?,?,?)
+		');
+		$query->execute(array(
+			$device_id,
+			$product,
+			$vendor,
+			$description,
+			$physid,
+			$bus,
+			$bits,
+			$irq
+		));
+		return $this->db->lastInsertId();
+	}
+	
+	public function NICAdd($device_id,$device_pci_id,$vendor,$product,$logicalname,$mac,$speed,$irq){
 		$query = $this->db->prepare('
 			insert into device_nics
 			(
 				device_id,
+				device_pci_id,
 				vendor,
 				product,
 				logicalname,
 				mac,
 				speed,
 				irq
-			) values (?,?,?,?,?,?,?)
+			) values (?,?,?,?,?,?,?,?)
 		');
 		$query->execute(array(
 			$device_id,
+			$device_pci_id,
 			$vendor,
 			$product,
 			$logicalname,
@@ -137,11 +219,26 @@ class Devices {
 		return $this->db->lastInsertId();
 	}
 	
-	public function driveAdd($device_id,$controller,$vendor,$product,$device_path,$serial,$size,$bus,$physid){
+	public function driveAdd(
+		$device_id,
+		$device_pci_id,
+		$device_scsi_id,
+		$controller,
+		$vendor,
+		$product,
+		$device_path,
+		$serial,
+		$size,
+		$bus,
+		$physid,
+		$partition_table
+	){
 		$query = $this->db->prepare('
 			insert into device_drives
 			(
 				device_id,
+				device_pci_id,
+				device_scsi_id,
 				controller,
 				vendor,
 				product,
@@ -149,11 +246,14 @@ class Devices {
 				serial,
 				bus,
 				physid,
-				size
-			) values (?,?,?,?,?,?,?,?,?)
+				size,
+				partition_table
+			) values (?,?,?,?,?,?,?,?,?,?,?,?)
 		');
 		$query->execute(array(
 			$device_id,
+			$device_pci_id,
+			$device_scsi_id,
 			$controller,
 			$vendor,
 			$product,
@@ -161,7 +261,53 @@ class Devices {
 			$serial,
 			$bus,
 			$physid,
-			$size
+			$size,
+			$partition_table
+		));
+		return $this->db->lastInsertId();
+	}
+	
+	public function drivePartitionAdd(
+		$device_id,
+		$device_drive_id,
+		$parent_device_drive_partition_id,
+		$segment,
+		$partition_path,
+		$mount_point,
+		$physid,
+		$serial,
+		$size,
+		$filesystem,
+		$is_bootable
+	){
+		$query = $this->db->prepare('
+			insert into device_drive_partitions
+			(
+				device_id,
+				device_drive_id,
+				parent_device_drive_partition_id,
+				segment,
+				partition_path,
+				mount_point,
+				physid,
+				serial,
+				size,
+				filesystem,
+				is_bootable
+			) values (?,?,?,?,?,?,?,?,?,?,?)
+		');
+		$query->execute(array(
+			$device_id,
+			$device_drive_id,
+			$parent_device_drive_partition_id,
+			$segment,
+			$partition_path,
+			$mount_point,
+			$physid,
+			$serial,
+			$size,
+			$filesystem,
+			$is_bootable
 		));
 		return $this->db->lastInsertId();
 	}
@@ -172,6 +318,8 @@ class Devices {
 		$this->deleteDrives($device_id);
 		$this->deleteMemoryModules($device_id);
 		$this->deleteNICs($device_id);
+		$this->deletePCI($device_id);
+		$this->deleteSCSI($device_id);
 		return $device_id;
 	}
 	
@@ -201,6 +349,18 @@ class Devices {
 	
 	public function deleteNICs($device_id){
 		$query = $this->db->prepare('delete from device_nics where device_id = ?');
+		$query->execute(array($device_id));
+		return true;
+	}
+	
+	public function deletePCI($device_id){
+		$query = $this->db->prepare('delete from device_pci where device_id = ?');
+		$query->execute(array($device_id));
+		return true;
+	}
+	
+	public function deleteSCSI($device_id){
+		$query = $this->db->prepare('delete from device_scsi where device_id = ?');
 		$query->execute(array($device_id));
 		return true;
 	}
