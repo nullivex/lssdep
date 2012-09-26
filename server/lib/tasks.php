@@ -38,7 +38,7 @@ class Tasks {
 	
 	public function error($task_id,$err_msg,$err_code){
 		$query = $this->db->prepare('update tasks set is_error = ?, err_msg = ?, err_code = ? where task_id = ?');
-		$query->exceute(array(1,$err_msg,$err_code,$task_id));
+		$query->execute(array(1,$err_msg,$err_code,$task_id));
 		return $task_id;
 	}
 	
