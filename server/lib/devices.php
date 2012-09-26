@@ -39,7 +39,7 @@ class Devices {
 	}
 	
 	public function get($device_id){
-		$query = $this->db->prepare('select device_id,mac,name,added from devices where device_id = ?');
+		$query = $this->db->prepare('select device_id,image_id,mac,name,added from devices where device_id = ?');
 		$query->execute(array($device_id));
 		$result = $query->fetch(); $query->closeCursor();
 		if(!$result) throw new Exception('Could not find device: '.$device_id);
@@ -55,7 +55,7 @@ class Devices {
 	}
 	
 	public function getByMAC($mac){
-		$query = $this->db->prepare('select device_id,mac,name,added from devices where mac = ?');
+		$query = $this->db->prepare('select device_id,image_id,mac,name,added from devices where mac = ?');
 		$query->execute(array($mac));
 		$result = $query->fetch(); $query->closeCursor();
 		if(!$result) throw new Exception('Could not find device by MAC address: '.$mac);

@@ -6,6 +6,7 @@ require_once('src/boot.php');
 
 //require
 require_once(ROOT.'/src/func_lssdep.php');
+require_once(ROOT.'/lib/device.php');
 require_once(ROOT.'/lib/tml.php');
 
 $lo = array(

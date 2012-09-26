@@ -41,6 +41,7 @@ class Task {
 	}
 	
 	public function prime($desc,$cur_step,$total_steps){
+		Ui::out($cur_step."\n");
 		$this->cur_step = $cur_step;
 		$this->total_steps = $total_steps;
 		apiCall('task_prime',array(
@@ -52,6 +53,7 @@ class Task {
 	}
 	
 	public function update($desc,$cur_step){
+		Ui::out($cur_step."\n");
 		$this->cur_step = $cur_step;
 		apiCall('task_update',array('task_id'=>$this->task['task_id'],'step_desc'=>$desc,'current_step'=>$cur_step));
 	}

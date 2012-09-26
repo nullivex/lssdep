@@ -44,7 +44,7 @@ function apiCall($call,$vars=array()){
 }
 
 function _apiCall($url,$vars=array(),$post=true){
-	if(OUT_LEVEL >= OUT_DEBUG) UI::out("\n\n\n====== API Call ======\nURL: $url\nDATA: ".print_r($vars,true)."\n\n");
+	if(OUT_LEVEL > OUT_DEBUG) UI::out("\n\n\n====== API Call ======\nURL: $url\nDATA: ".print_r($vars,true)."\n\n");
 	$ch = curl_init($url);
 	curl_setopt($ch,CURLOPT_RETURNTRANSFER,true);
 	curl_setopt($ch,CURLOPT_SSL_VERIFYPEER,false);
@@ -55,6 +55,6 @@ function _apiCall($url,$vars=array(),$post=true){
 		curl_setopt($ch,CURLOPT_URL,$url.'&'.http_build_query($vars));
 	}
 	$out = curl_exec($ch);
-	if(OUT_LEVEL >= OUT_DEBUG) UI::out("=== API RESPONSE ===\n\n".$out."\n\n====== END API CALL ======\n$url\n\n\n");
+	if(OUT_LEVEL > OUT_DEBUG) UI::out("=== API RESPONSE ===\n\n".$out."\n\n====== END API CALL ======\n$url\n\n\n");
 	return $out;
 }

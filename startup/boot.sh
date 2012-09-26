@@ -15,7 +15,7 @@ sleep 2
 
 # new packages (should be merged)
 aptitude -y update
-aptitude -y install parted nginx
+aptitude -y install parted nginx bzip2
 mkdir -p /var/www
 service nginx start
 
