@@ -37,6 +37,9 @@ foreach($xml->xpath('node/node') as $el){
 	}
 }
 
+//---------------------
+//Helper Functions
+//---------------------
 function processMotherboard($device_id,$xml){
 	$uuid = $product = $serial = null;
 	foreach($xml->configuration->children() as $el){
@@ -128,7 +131,7 @@ function processNICs($device_id,$device_pci_id,$el){
 	if(!$el->node->count()) return;
 	foreach($el->xpath('node') as $e){
 		$id = $e->attributes(); $id = $id['id'];
-		if($id != 'network') continue;
+		if(strpos($id,'network') === false) continue;
 		//start adding nic
 		$product = $vendor = $logicalname = $mac = $speed = $irq = null;
 		$product = (string) $e->product;
@@ -147,7 +150,7 @@ function processDrives($device_id,$device_pci_id,$device_scsi_id,$el){
 	if(!$el->node->count()) return;
 	foreach($el->xpath('node') as $e){
 		$id = $e->attributes(); $id = $id['id'];
-		if($id != 'disk') continue;
+		if(strpos($id,'disk') === false) continue;
 		//start adding disk
 		$controller = $vendor = $product = $device_path = $serial = $size = $bus = $physid = null;
 		$partition_table = Devices::DRIVE_PART_TYPE_NONE;

@@ -48,7 +48,7 @@ if [ -z "$livenetdev" ]; then
 	livenetdev=$lssdepnetdev
 fi
 
-LSSDEPCMD="lssdep --live --netdev $livenetdev --server $lssdepserver --token $lssdeptoken --debug"
+LSSDEPCMD="lssdep -vvvv --live --netdev $livenetdev --server $lssdepserver --token $lssdeptoken"
 echo "If there are problems, use the following command to rerun lssdep"
 echo $LSSDEPCMD > /usr/bin/lssdep_run
 chmod +x /usr/bin/lssdep_run

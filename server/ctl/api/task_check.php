@@ -13,4 +13,3 @@ $dev = Devices::_get()->getByMAC($mac);
 $tasks = Tasks::_get()->getByDevice($dev['device_id']);
 
 echo TML::fromArray(array('response'=>array('dev'=>$dev,'tasks'=>$tasks)));
-exit;

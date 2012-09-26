@@ -1,6 +1,7 @@
 <?php
 
 function live(){
+	require_once(ROOT.'/lib/task.php');
 	UI::out("Welcome to LSSDep live\n");
 	UI::out("Checking for task, will reboot if no task is found\n");
 	$mac = getMAC(NETDEV);
@@ -8,14 +9,9 @@ function live(){
 	$_device = array_shift(TML::toArray(apiCall('task_check',array('mac'=>$mac))));
 	if(!isset($_device['tasks'])) throw new Exception('No tasks to be run');
 	foreach($_device['tasks'] as $task){
-		switch($task['type']){
-			case 'inventory':
-				require(ROOT.'/tasks/inventory.php');
-				break;
-			default:
-				throw new Exception('Task type unsupported: '.$task['type']);
-				break;
-		}
+		//run task
+		try { Task::run($task,$_device); }
+		catch(Exception $e){ UI::out("WARNING: ".$e->getMessage()."\n",OUT_WARN); }
 	}
 }
 
@@ -32,6 +28,10 @@ function apiCall($call,$vars=array()){
 	if(!isset($vars['token']) || empty($vars['token'])) $vars['token'] = TOKEN;
 	switch($call){
 		case 'task_check':
+		case 'task_prime':
+		case 'task_update':
+		case 'task_complete':
+		case 'task_error':
 		case 'inventory_submit':
 		case 'inventory_process':
 			return _apiCall($api_url.$call,$vars);
@@ -44,7 +44,7 @@ function apiCall($call,$vars=array()){
 }
 
 function _apiCall($url,$vars=array(),$post=true){
-	if(DEBUG) UI::out("\n\n\n====== API Call ======\nURL: $url\nDATA: ".print_r($vars,true)."\n\n");
+	if(OUT_LEVEL >= OUT_DEBUG) UI::out("\n\n\n====== API Call ======\nURL: $url\nDATA: ".print_r($vars,true)."\n\n");
 	$ch = curl_init($url);
 	curl_setopt($ch,CURLOPT_RETURNTRANSFER,true);
 	curl_setopt($ch,CURLOPT_SSL_VERIFYPEER,false);
@@ -55,6 +55,6 @@ function _apiCall($url,$vars=array(),$post=true){
 		curl_setopt($ch,CURLOPT_URL,$url.'&'.http_build_query($vars));
 	}
 	$out = curl_exec($ch);
-	if(DEBUG) UI::out("=== API RESPONSE ===\n\n".$out."\n\n====== END API CALL ======\n$url\n\n\n");
+	if(OUT_LEVEL >= OUT_DEBUG) UI::out("=== API RESPONSE ===\n\n".$out."\n\n====== END API CALL ======\n$url\n\n\n");
 	return $out;
 }

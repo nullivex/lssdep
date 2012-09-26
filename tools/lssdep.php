@@ -21,7 +21,6 @@ $opts = getopt('',$lo);
 define('SERVER',mda_get($opts,'server'));
 define('NETDEV',mda_get($opts,'netdev'));
 define('TOKEN',mda_get($opts,'token'));
-define('DEBUG',(!is_null(mda_get($opts,'debug')) ? true : false));
 if(!SERVER || !NETDEV || !TOKEN)
 	throw new Exception('Missing required startup params: server,netdev,token',ERR_STARTUP_PARAMS_MISSING);
 
