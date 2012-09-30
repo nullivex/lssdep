@@ -5,9 +5,6 @@ echo "Starting LSSDep"
 ifconfig eth0
 route -n
 
-echo "Waiting for network to settle"
-sleep 2
-
 # these packages have been merged into the deploy filesystem
 #echo "Installing LSSDep required packages"
 #aptitude -y update

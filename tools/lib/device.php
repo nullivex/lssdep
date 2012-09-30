@@ -18,5 +18,10 @@ class Device {
 	const FS_REISERFS = 'reiserfs';
 	const FS_REISER4 = 'reiser4';
 	
+	//drive types
+	const DRIVE_RAW = 'raw';
+	const DRIVE_RAID = 'raid';
+	const DRIVE_LVM = 'lvm';
+	
 	
 }

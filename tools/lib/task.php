@@ -53,7 +53,7 @@ class Task {
 	}
 	
 	public function update($desc,$cur_step){
-		Ui::out($cur_step."\n");
+		Ui::out("\n\n======== $desc ========\n\n");
 		$this->cur_step = $cur_step;
 		apiCall('task_update',array('task_id'=>$this->task['task_id'],'step_desc'=>$desc,'current_step'=>$cur_step));
 	}

@@ -39,7 +39,7 @@ class Devices {
 	}
 	
 	public function get($device_id){
-		$query = $this->db->prepare('select device_id,image_id,mac,name,added from devices where device_id = ?');
+		$query = $this->db->prepare('select device_id,image_id,mac,name,added,is_wipe from devices where device_id = ?');
 		$query->execute(array($device_id));
 		$result = $query->fetch(); $query->closeCursor();
 		if(!$result) throw new Exception('Could not find device: '.$device_id);
@@ -55,11 +55,27 @@ class Devices {
 	}
 	
 	public function getByMAC($mac){
-		$query = $this->db->prepare('select device_id,image_id,mac,name,added from devices where mac = ?');
+		$query = $this->db->prepare('select device_id,image_id,mac,name,added,is_wipe from devices where mac = ?');
 		$query->execute(array($mac));
 		$result = $query->fetch(); $query->closeCursor();
 		if(!$result) throw new Exception('Could not find device by MAC address: '.$mac);
 		return $result;
+	}
+	
+	public function getDrivesWP($device_id){
+		$query = $this->db->prepare('select * from device_drives where device_id = ? order by device_path asc');
+		$query->execute(array($device_id));
+		$drives = $query->fetchAll();
+		foreach($drives as &$drive){
+			$drive['partitions'] = $this->getDrivePartitions($drive['device_drive_id']);
+		}
+		return $drives;
+	}
+	
+	public function getDrivePartitions($device_drive_id){
+		$query = $this->db->prepare('select * from device_drive_partitions where device_drive_id = ? order by physid asc');
+		$query->execute(array($device_drive_id));
+		return $query->fetchAll();
 	}
 	
 	public function inventoryRawUpdate($device_id,$inventory_raw){

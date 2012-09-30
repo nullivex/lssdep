@@ -3,36 +3,57 @@
 Task::_get()->prime('Start capture',1,5);
 
 Task::_get()->update('Mounting NTFS from master',2);
-run('mount -t nfs '.SERVER.':/images /mnt');
+run(sprintf('mount -t nfs %s:/images /mnt',SERVER));
 
 Task::_get()->update('Priming destination',3);
-run('mkdir -p /mnt/'.$_device['image']['name']);
+run(sprintf('mkdir -p /mnt/%s',$_device['image']['name']));
 
 Task::_get()->update('Checking partitions and starting capture',4);
-foreach($_device['image']['partitions'] as $part){
-	Task::_get()->update('Capturing partition '.$part['number'] .' from drive '.$part['drive_letter'],4);
-	switch($part['filesystem']){
-		case Device::FS_NTFS:
-			//figure out paths
-			$drive = '/dev/sd'.$part['drive_letter'].$part['number'];
-			$dest = '/mnt/'.$_device['image']['name'].'/part_'.$part['drive_letter'].'_'.$part['number'].'.ntfsclone';
-			//find smallest size of drive
-			$out = run('ntfsresize -i '.$drive);
-			preg_match('/or (\d+ \w{2})/si',$out,$m);
-			if(!isset($m[1]) || empty($m[1])) throw new Exception('Could not determine smallest size of NTFS partition',ERR_PARTITION_NTFS_SIZE_MISSING);
-			$size = str_replace(' ','',rtrim($m[1],'bB')); unset($out,$m);
-			//resize partition
-			run('echo y | ntfsresize -f -s '.$size.' '.$drive);
-			//capture
-			run('rm -rf '.$dest.' '.$dest.'.bz2');
-			run('ntfsclone -sf -O '.$dest.' '.$drive);
-			run('bzip2 '.$dest);
-			//grow the partition back to its original
-			run('echo y | ntfsresize -f '.$drive);
-			break;
-		default:
-			throw new Exception('Partition filesystem unsupported',ERR_PARTITION_FS_UNSUPPORTED);
-			break;
+foreach($_device['image']['drives'] as $drive){
+	//capture mbr
+	run(sprintf('dd if=%s of=/mnt/%s/drive-%d_mbr bs=1 skip=0 count=445',$drive['path'],$_device['image']['name'],$drive['image_drive_id']));
+	//capture partitions
+	foreach($drive['partitions'] as $part){
+		Task::_get()->update('Capturing partition '.$part['number'] .' from drive '.$drive['path'],4);
+		switch($part['filesystem']){
+			case Device::FS_NTFS:
+				//figure out paths
+				$dest = sprintf(
+					'/mnt/%s/drive-%d_part-%d_%s',
+					$_device['image']['name'],
+					$drive['image_drive_id'],
+					$part['image_drive_partition_id'],
+					$part['filesystem']
+				);
+				//find smallest size of drive
+				$out = run(sprintf('ntfsresize -f -i %s%d',$drive['path'],$part['number']));
+				preg_match('/or (\d+ \w{2})/si',$out,$m);
+				if(!isset($m[1]) || empty($m[1])) throw new Exception('Could not determine smallest size of NTFS partition',ERR_PARTITION_NTFS_SIZE_MISSING);
+				list($size,$delim) = explode(' ',rtrim($m[1],'bB')); unset($out,$m);
+				//add to the smaller size so there is room for windows stuff
+				switch($delim){
+					case 'M':
+						$size += 500;
+						break;
+					case 'G':
+						$size += 1;
+						break;
+					default:
+						break;
+				}
+				//resize partition
+				run(sprintf('ntfsfix %s%d',$drive['path'],$part['number']));
+				run(sprintf('echo y | ntfsresize -f -s %s%s %s%d',$size,$delim,$drive['path'],$part['number']));
+				//capture
+				run(sprintf('ntfsclone -f --overwrite %s -s %s%d',$dest,$drive['path'],$part['number']));
+				//grow the partition back to its original
+				run(sprintf('ntfsfix %s%d',$drive['path'],$part['number']));
+				run(sprintf('echo y | ntfsresize -f %s%d',$drive['path'],$part['number']));
+				break;
+			default:
+				throw new Exception('Partition filesystem unsupported',ERR_PARTITION_FS_UNSUPPORTED);
+				break;
+		}
 	}
 }
 
